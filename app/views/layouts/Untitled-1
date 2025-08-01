@@ -1,0 +1,11 @@
+<%= render layout: "shared/card", locals: { 
+  header: "Welcome to ChargeFinder",
+  footer: render("shared/button", variant: :primary, class: "w-full sm:w-auto") { "Get Started" }
+} do %>
+  <p class="text-gray-600 text-lg">
+    Find charging stations near you with ease
+  </p>
+  <p class="text-gray-500">
+    Join our community of electric vehicle owners
+  </p>
+<% end %>

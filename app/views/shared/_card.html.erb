@@ -1,0 +1,19 @@
+<div class="bg-white shadow-md rounded-lg overflow-hidden font-inter max-w-2xl mx-auto">
+  <% if local_assigns[:header] %>
+    <div class="px-4 py-5 border-b border-gray-200 sm:px-6 text-center">
+      <h2 class="text-2xl font-semibold text-gray-800"><%= header %></h2>
+    </div>
+  <% end %>
+  
+  <div class="px-4 py-5 sm:p-6 text-center">
+    <div class="space-y-4">
+      <%= content %>
+    </div>
+  </div>
+
+  <% if local_assigns[:footer] %>
+    <div class="px-4 py-4 sm:px-6 bg-gray-50 text-center">
+      <%= footer %>
+    </div>
+  <% end %>
+</div>

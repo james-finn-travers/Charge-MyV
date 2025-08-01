@@ -1,0 +1,19 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: localhost
+  username: postgres
+  password: james
+
+development:
+  <<: *default
+  database: chargefinder_development
+
+test:
+  <<: *default
+  database: chargefinder_test
+
+production:
+  <<: *default
+  database: chargefinder_production

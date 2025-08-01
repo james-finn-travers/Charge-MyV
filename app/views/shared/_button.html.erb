@@ -1,0 +1,25 @@
+<% variant_classes = {
+  primary: "bg-indigo-600 hover:bg-indigo-700 text-white",
+  secondary: "bg-gray-200 hover:bg-gray-300 text-gray-900",
+  danger: "bg-red-600 hover:bg-red-700 text-white"
+} %>
+
+<%= tag.button(
+  class: "px-4 py-2 rounded-md text-sm font-medium #{variant_classes[variant]} #{local_assigns[:class]}", 
+  **local_assigns.except(:variant, :class)
+) do %>
+  <%= content %>
+<% end %>
+
+<%# Example usage in any view %>
+<%= render "shared/button", variant: :primary, class: "mt-4", data: { turbo: false } do %>
+  Click Me
+<% end %>
+
+<%= render "shared/button", variant: :secondary do %>
+  Cancel
+<% end %>
+
+<%= render "shared/button", variant: :danger do %>
+  Delete
+<% end %>
