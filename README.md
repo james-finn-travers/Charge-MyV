@@ -1,24 +1,16 @@
-# README
+# ChargeFinder
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+An EV charging station locator for Ontario.
 
-Things you may want to cover:
+## Setup
 
-* Ruby version
+1. Clone the repository
+2. Install dependencies: `bundle install`
+3. Setup database: `bin/rails db:create db:migrate`
+4. Start the server: `bin/dev`
 
-* System dependencies
+## Features
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+- Find nearby charging stations
+- Filter by connector type
+- View station details and availability
