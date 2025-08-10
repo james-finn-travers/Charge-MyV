@@ -24,6 +24,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_27_032125) do
     t.decimal "power_output"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "number_of_reviews", default: 0
+    t.integer "sum_of_ratings", default: 0
+    t.float "average_rating", default: 0.0
   end
 
   create_table "users", force: :cascade do |t|
@@ -37,4 +40,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_27_032125) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
+
+  create_table "reviews", force: :cascade do |t|
+    t.integer "charging_station_id", null: false
+    t.integer "user_id", null: false
+    t.integer "rating", null: false
+    t.integer "likes_count", default: 0
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["charging_station_id"], name: "index_reviews_on_charging_station_id"
+    t.index ["user_id"], name: "index_reviews_on_user_id"
+  end
+
+
 end
