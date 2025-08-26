@@ -1,17 +1,27 @@
 class StationsController < ApplicationController
-    def index 
+    def index
+        @location = params[:location]
         @current_latitude = params[:latitude]
         @current_longitude = params[:longitude]
+        @radius = params[:radius] || 10 # Default radius in km
+        @charging_types = params[:charging_types] || []
 
-        @stations = ChargingStation.all.map do |station|
-            distance = calculate_distance(
-                @current_latitude.to_f,
-                @current_longitude.to_f,
-                station.latitude,
-                station.longitude
-            )
-            [station, distance]
-        end.sort_by { |_, distance| distance }
+        @stations = if @current_latitude.present? && @current_longitude.present?
+            ChargingStation.nearby(@current_latitude, @current_longitude, @radius)
+        elsif @location.present?
+            ChargingStation.nearby(@location, @radius)
+        else
+            ChargingStation.all
+        end
+
+        # Filter by connector types if specified
+        if @charging_types.present? && @charging_types.any?
+            if @stations.respond_to?(:where)
+                # Build safe OR conditions for connector_types
+                conditions = @charging_types.map { |type| "connector_types ILIKE ?" }
+                @stations = @stations.where(conditions.join(" OR "), *@charging_types.map { |type| "%#{type}%" })
+            end
+        end
     end
 
     private
@@ -31,5 +41,12 @@ class StationsController < ApplicationController
         c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 
         rm * c # Distance in meters
+    end
+
+
+    def show
+        @station = ChargingStation.find(params[:id])
+        @current_latitude = params[:latitude]
+        @current_longitude = params[:longitude]
     end
 end

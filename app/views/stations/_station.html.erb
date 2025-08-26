@@ -1,0 +1,22 @@
+<div class="flex justify-between items-start">
+  <div>
+    <h3 class="text-lg font-medium text-gray-900"><%= station.name %></h3>
+    <p class="text-sm text-gray-500"><%= station.address %></p>
+    <div class="mt-2 flex space-x-4 text-sm text-gray-500">
+      <p>Connectors: <%= station.connector_types %></p>
+      <% if station.power_output.present? %>
+        <p>Power: <%= station.power_output %> kW</p>
+      <% end %>
+      <p class="<%= station.availability == 'available' ? 'text-green-600' : 'text-red-600' %>">
+        <%= station.availability&.titleize %>
+      </p>
+    </div>
+  </div>
+  <div class="text-right">
+    <% if station.respond_to?(:distance) && station.distance.present? %>
+      <p class="text-lg font-medium text-gray-900"><%= number_with_precision(station.distance, precision: 1) %> km</p>
+    <% end %>
+    <%= link_to "Details", station_path(station), 
+        class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+  </div>
+</div>

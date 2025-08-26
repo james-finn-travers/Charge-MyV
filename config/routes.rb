@@ -1,33 +1,40 @@
 Rails.application.routes.draw do
-  resource :session
-  resources :passwords, param: :token
-  root 'stations#index'
+  get "users/new"
+  get "users/create"
+  get "users/create"
+  get "users/Show"
+
   devise_for :users
-  get "home/index"
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # Root route
+  root "stations#index"
+
+  # Authentication routes
+  get "/login", to: "sessions#new", as: :new_session
+  post "/login", to: "sessions#create", as: :session
+  delete "/logout", to: "sessions#destroy", as: :destroy_session
+
+
+  # Charging Stations routes
+  get "/find_stations", to: "stations#index", as: :find_stations
+  get "/charging_stations", to: "stations#index", as: :charging_stations
+  get "/charging_stations/:id", to: "stations#show", as: :charging_station
+
+
+  # User management
+  get "/signup", to: "users#new"
+  post "/signup", to: "users#create"
+  get "/profile", to: "users#show"
+
+  # Resource routes
+  resources :stations, only: [ :index ]
+  resources :charging_stations
+  resources :reviews do
+    member do
+      post "like"
+    end
+  end
+
+  # Health check
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  # Defines the root path route ("/")
-  # root "posts#index"
-  resources :stations, only: [:index]
-
-  get '/login', to: 'sessions#new'
-  post '/login', to: 'sessions#create'
-  delete '/logout', to: 'sessions#destroy'
-  
-  resources :users, only: [:new, :create]
-
-  get '/signup', to: 'users#new'
-  post '/signup', to: 'users#create'
-  get '/profile', to: 'users#show'
-
-  post '/post_review', to: 'reviews#create'
-
 end

@@ -9,7 +9,8 @@
       </p>
       <div class="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
         <% if user_signed_in? %>
-          <%= link_to "Dashboard", "#", class: "inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+          <%= link_to "Find Charging Stations", find_stations_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+          <%= link_to "Find Stations", find_stations_path, class: "ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700" %>
         <% else %>
           <%= link_to "Sign Up", new_user_registration_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
           <%= link_to "Log In", new_user_session_path, class: "ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700" %>
