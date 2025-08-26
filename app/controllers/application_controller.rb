@@ -18,6 +18,7 @@ class ApplicationController < ActionController::Base
   def sign_in(user)
     session[:user_id] = user.id
     @current_user = user
+    charging_stations_path
   end
 
   def sign_out
