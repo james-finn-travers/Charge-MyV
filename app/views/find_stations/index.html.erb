@@ -11,32 +11,21 @@
     <h1 class="text-3xl font-bold text-gray-900">Find Charging Stations</h1>
     
     <%= form_tag find_stations_path, method: :get, class: "mt-4 space-y-4" do %>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="flex-1">
-          <%= label_tag :location, "Address or Location", class: "block text-sm font-medium text-gray-700" %>
-          <%= text_field_tag :location, params[:location], 
-              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
-              placeholder: "Enter address or city" %>
-        </div>
-        
-        <div class="w-full">
-          <%= label_tag :radius, "Radius (km)", class: "block text-sm font-medium text-gray-700" %>
-          <%= number_field_tag :radius, params[:radius] || 10, 
-              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
-              min: 1, max: 50 %>
-        </div>
-
-        <div class="w-full">
-          <%= label_tag :charging_type, "Charging Type", class: "block text-sm font-medium text-gray-700" %>
-          <%= select_tag :charging_type, 
-              options_for_select([
-                ['All Types', ''],
-                ['Level 1 (Slow)', 'level_1'],
-                ['Level 2 (Medium)', 'level_2'],
-                ['DC Fast Charging', 'dc_fast'],
-                ['Tesla Supercharger', 'tesla_supercharger']
-              ], params[:charging_type]),
-              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+      <div class="max-w-lg mx-auto">
+        <div class="flex gap-4">
+          <div class="flex-1">
+            <%= label_tag :location, "Address or Location", class: "block text-sm font-medium text-gray-700" %>
+            <%= text_field_tag :location, params[:location], 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
+                placeholder: "Enter address or city" %>
+          </div>
+          
+          <div class="w-32">
+            <%= label_tag :radius, "Radius (km)", class: "block text-sm font-medium text-gray-700" %>
+            <%= number_field_tag :radius, params[:radius] || 10, 
+                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
+                min: 1, max: 50 %>
+          </div>
         </div>
       </div>
 

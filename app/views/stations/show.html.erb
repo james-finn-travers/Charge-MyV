@@ -1,0 +1,46 @@
+<%= content_for :title, @station.name %>
+
+<div class="bg-white shadow-lg rounded-lg overflow-hidden">
+  <div class="p-6">
+    <div class="flex justify-between items-start">
+      <h1 class="text-2xl font-bold text-gray-900 mb-4"><%= @station.name %></h1>
+      <div class="<%= @station.is_operational ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %> px-3 py-1 rounded-full text-sm font-medium">
+        <%= @station.is_operational ? 'Operational' : 'Out of Service' %>
+      </div>
+    </div>
+
+    <div class="mt-4 space-y-4">
+      <div>
+        <h2 class="text-lg font-semibold text-gray-700">Location</h2>
+        <p class="text-gray-600"><%= @station.address %></p>
+        <p class="text-sm text-gray-500">Coordinates: <%= number_with_precision(@station.latitude, precision: 6) %>, <%= number_with_precision(@station.longitude, precision: 6) %></p>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-semibold text-gray-700">Charging Details</h2>
+        <div class="mt-2 space-y-2">
+          <p class="text-gray-600">
+            <span class="font-medium">Connector Types:</span> 
+            <%= @station.connector_types || "Not specified" %>
+          </p>
+          <p class="text-gray-600">
+            <span class="font-medium">Power Output:</span>
+            <%= @station.power_output ? "#{@station.power_output} kW" : "Not specified" %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-8 flex space-x-4">
+      <%= link_to "Back to All Stations", charging_stations_path, 
+          class: "px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+      
+      <% if @station.latitude && @station.longitude %>
+        <%= link_to "View on Map", 
+            "https://www.google.com/maps?q=#{@station.latitude},#{@station.longitude}", 
+            target: "_blank",
+            class: "px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700" %>
+      <% end %>
+    </div>
+  </div>
+</div>

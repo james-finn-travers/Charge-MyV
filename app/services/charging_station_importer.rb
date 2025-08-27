@@ -5,24 +5,26 @@ class ChargingStationImporter
 
   def self.import_ontario_stations
     api_key = Rails.application.credentials.dig(:open_charge_map, :api_key)
-    puts "Starting import..."
+    puts "Starting import of Ontario charging stations..."
+    start_time = Time.current
     
     unless api_key.present?
       puts "Error: OpenChargeMap API key not configured"
+      puts "Please set it in config/credentials.yml.enc using:"
+      puts "EDITOR='code --wait' bin/rails credentials:edit"
       return
     end
 
     page = 1
     per_page = 100
     total_imported = 0
-    max_stations = 100
 
     loop do
-      print "\rFetching page #{page}..."
+      print "\rFetching page #{page}... "
       
       response = get('/poi', query: {
         countrycode: 'CA',
-        regioncode: 'ON',
+        regioncode: 'ON',  # Specifically for Ontario
         maxresults: per_page,
         page: page,
         compact: true,
@@ -43,13 +45,70 @@ class ChargingStationImporter
           create_or_update_station(station)
           total_imported += 1
           print "\rImported #{total_imported} stations..."
-          break if total_imported >= max_stations
         rescue => e
           puts "\nWarning: Skipped station - #{e.message}"
         end
       end
+      
       page += 1
-      break if stations.length < per_page || total_imported >= max_stations
+      break if stations.length < per_page
+      
+      # Add a small delay to respect rate limits
+      sleep(0.5)
+    end
+
+    duration = Time.current - start_time
+    puts "\nImport completed!"
+    puts "Total stations imported: #{total_imported}"
+    puts "Time taken: #{duration.round(2)} seconds"
+    total_imported
+  end
+
+  def self.import_canadian_stations
+    api_key = Rails.application.credentials.dig(:open_charge_map, :api_key)
+    puts "Starting import of Canadian charging stations..."
+    
+    unless api_key.present?
+      puts "Error: OpenChargeMap API key not configured"
+      return
+    end
+
+    page = 1
+    per_page = 100
+    total_imported = 0
+
+    loop do
+      print "\rFetching page #{page}..."
+      
+      response = get('/poi', query: {
+        countrycode: 'CA',  # Changed to fetch all Canadian stations
+        maxresults: per_page,
+        page: page,
+        compact: true,
+        verbose: false,
+        key: api_key
+      })
+      
+      unless response.success?
+        puts "\nError: API request failed with status #{response.code}"
+        return
+      end
+
+      stations = response.parsed_response
+      break if stations.empty?
+
+      stations.each do |station|
+        begin
+          create_or_update_station(station)
+          total_imported += 1
+          print "."
+        rescue => e
+          puts "\nWarning: Skipped station - #{e.message}"
+        end
+      end
+      
+      page += 1
+      break if stations.length < per_page
     end
 
     puts "\nImport completed! Total stations imported: #{total_imported}"

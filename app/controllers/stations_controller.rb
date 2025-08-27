@@ -4,7 +4,8 @@ class StationsController < ApplicationController
         @current_latitude = params[:latitude]
         @current_longitude = params[:longitude]
         @radius = params[:radius] || 10 # Default radius in km
-        @charging_types = params[:charging_types] || []
+        @min_power = params[:min_power]
+        @max_power = params[:max_power]
 
         @stations = if @current_latitude.present? && @current_longitude.present?
             ChargingStation.nearby(@current_latitude, @current_longitude, @radius)
@@ -14,14 +15,16 @@ class StationsController < ApplicationController
             ChargingStation.all
         end
 
-        # Filter by connector types if specified
-        if @charging_types.present? && @charging_types.any?
-            if @stations.respond_to?(:where)
-                # Build safe OR conditions for connector_types
-                conditions = @charging_types.map { |type| "connector_types ILIKE ?" }
-                @stations = @stations.where(conditions.join(" OR "), *@charging_types.map { |type| "%#{type}%" })
-            end
-        end
+        # Filter by power output range if specified
+        @stations = @stations.where('power_output >= ?', @min_power) if @min_power.present?
+        @stations = @stations.where('power_output <= ?', @max_power) if @max_power.present?
+    end
+
+    def show
+        @station = ChargingStation.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+        flash[:alert] = "Charging station not found"
+        redirect_to charging_stations_path
     end
 
     private
@@ -41,12 +44,5 @@ class StationsController < ApplicationController
         c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 
         rm * c # Distance in meters
-    end
-
-
-    def show
-        @station = ChargingStation.find(params[:id])
-        @current_latitude = params[:latitude]
-        @current_longitude = params[:longitude]
     end
 end

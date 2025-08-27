@@ -1,4 +1,4 @@
-class ChargefinderImporter
+class ChargeMyvImporter
   include HTTParty
   base_uri "https://api.chargefinder.com"
 
@@ -82,11 +82,7 @@ class ChargefinderImporter
       longitude: data["longitude"],
       connector_types: extract_connector_types(data["connectors"]),
       power_output: extract_max_power(data["connectors"]),
-      availability: determine_availability(data),
-      network: data["network"] || "Unknown",
-      pricing: data["pricing"],
-      operating_hours: data["hours"],
-      amenities: data["amenities"]&.join(", ")
+      is_operational: determine_operational_status(data)
     )
 
     station.save!
@@ -137,14 +133,14 @@ class ChargefinderImporter
     max_power&.to_f
   end
 
-  def determine_availability(data)
+  def determine_operational_status(data)
     case data["status"]&.downcase
     when /operational|available|active/i
-      "available"
+      true
     when /maintenance|offline|inactive/i
-      "unavailable"
+      false
     else
-      "unknown"
+      true  # Default to operational
     end
   end
 end

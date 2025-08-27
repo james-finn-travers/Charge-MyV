@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   # Charging Stations routes
   get "/find_stations", to: "stations#index", as: :find_stations
   get "/charging_stations", to: "stations#index", as: :charging_stations
+  get "/charging_stations/:id", to: "stations#show", as: :station
   get "/charging_stations/:id", to: "stations#show", as: :charging_station
 
 

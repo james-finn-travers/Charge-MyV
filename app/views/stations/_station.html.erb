@@ -7,8 +7,8 @@
       <% if station.power_output.present? %>
         <p>Power: <%= station.power_output %> kW</p>
       <% end %>
-      <p class="<%= station.availability == 'available' ? 'text-green-600' : 'text-red-600' %>">
-        <%= station.availability&.titleize %>
+      <p class="<%= station.is_operational ? 'text-green-600' : 'text-red-600' %>">
+        <%= station.availability.titleize %>
       </p>
     </div>
   </div>
