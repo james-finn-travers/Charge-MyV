@@ -4,8 +4,8 @@
   <div class="p-6">
     <div class="flex justify-between items-start">
       <h1 class="text-2xl font-bold text-gray-900 mb-4"><%= @station.name %></h1>
-      <div class="<%= @station.is_operational ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %> px-3 py-1 rounded-full text-sm font-medium">
-        <%= @station.is_operational ? 'Operational' : 'Out of Service' %>
+      <div class="<%= @station.status_badge_class %> px-3 py-1 rounded-full text-sm font-medium">
+        <%= @station.status %>
       </div>
     </div>
 
@@ -32,7 +32,7 @@
     </div>
 
     <div class="mt-8 flex space-x-4">
-      <%= link_to "Back to All Stations", charging_stations_path, 
+      <%= link_to "Back to All Stations", stations_path, 
           class: "px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50" %>
       
       <% if @station.latitude && @station.longitude %>

@@ -1,35 +1,15 @@
 class ApplicationController < ActionController::Base
+  # Devise handles authentication automatically
   before_action :authenticate_user!
-  helper_method :current_user, :logged_in?
+  
+  # Add any custom before_actions here if needed
+  # before_action :configure_permitted_parameters, if: :devise_controller?
 
-  def current_user
-    @current_user ||= begin
-      User.find(session[:user_id]) if session[:user_id]
-    rescue ActiveRecord::RecordNotFound
-      session[:user_id] = nil
-      nil
-    end
-  end
+  private
 
-  def logged_in?
-    !!current_user
-  end
-
-  def sign_in(user)
-    session[:user_id] = user.id
-    @current_user = user
-    charging_stations_path
-  end
-
-  def sign_out
-    session[:user_id] = nil
-    @current_user = nil
-  end
-
-  def authenticate_user!
-    unless logged_in?
-      flash[:alert] = "Please sign in to continue"
-      redirect_to new_session_path
-    end
-  end
+  # If you need to customize Devise parameters, uncomment this:
+  # def configure_permitted_parameters
+  #   devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name])
+  #   devise_parameter_sanitizer.permit(:account_update, keys: [:first_name, :last_name])
+  # end
 end

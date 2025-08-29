@@ -10,49 +10,48 @@
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900">Find Charging Stations</h1>
     
-    <%= form_tag find_stations_path, method: :get, class: "mt-4 space-y-4" do %>
-      <div class="max-w-lg mx-auto">
-        <div class="flex gap-4">
-          <div class="flex-1">
-            <%= label_tag :location, "Address or Location", class: "block text-sm font-medium text-gray-700" %>
-            <%= text_field_tag :location, params[:location], 
-                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
-                placeholder: "Enter address or city" %>
-          </div>
-          
-          <div class="w-32">
-            <%= label_tag :radius, "Radius (km)", class: "block text-sm font-medium text-gray-700" %>
-            <%= number_field_tag :radius, params[:radius] || 10, 
-                class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
-                min: 1, max: 50 %>
+    <%= form_tag stations_path, method: :get, class: "mt-4 space-y-4" do %>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="flex-1">
+          <%= label_tag :location, "Address or Location", class: "block text-sm font-medium text-gray-700" %>
+          <%= text_field_tag :location, params[:location], 
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
+              placeholder: "Enter address or city" %>
+        </div>
+        
+        <div class="w-full">
+          <%= label_tag :radius, "Radius (km)", class: "block text-sm font-medium text-gray-700" %>
+          <%= number_field_tag :radius, params[:radius] || 10, 
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
+              min: 1, max: 50 %>
+        </div>
+
+        <div class="w-full">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Charging Power (kW)</label>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <%= label_tag :min_power, "Min kW", class: "block text-xs font-medium text-gray-600" %>
+              <%= number_field_tag :min_power, params[:min_power], 
+                  class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm",
+                  placeholder: "0", min: 0, max: 500, step: 1 %>
+            </div>
+            <div>
+              <%= label_tag :max_power, "Max kW", class: "block text-xs font-medium text-gray-600" %>
+              <%= number_field_tag :max_power, params[:max_power], 
+                  class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm",
+                  placeholder: "350", min: 0, max: 500, step: 1 %>
+            </div>
           </div>
         </div>
-            </div>
-            <div class="flex gap-4 mt-4">
-              <div class="w-1/2">
-                <%= label_tag :min_power, "Min Power (kW)", class: "block text-sm font-medium text-gray-700" %>
-                <%= number_field_tag :min_power, params[:min_power], 
-                    class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
-                    min: 0, step: 0.1,
-                    placeholder: "e.g., 7.4" %>
-              </div>
-              <div class="w-1/2">
-                <%= label_tag :max_power, "Max Power (kW)", class: "block text-sm font-medium text-gray-700" %>
-                <%= number_field_tag :max_power, params[:max_power], 
-                    class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
-                    min: 0, step: 0.1,
-                    placeholder: "e.g., 350" %>
-              </div>
-            </div>
-          </div>
       </div>
 
       <%= submit_tag "Search", class: "mt-4 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700" %>
     <% end %>
 
-    <button id="useLocation" class="mt-2 text-sm text-indigo-600 hover:text-indigo-800">
-      Use my current location
-    </button>
+    <%# Hidden for now - GPS location issues %>
+    <%# <button id="useLocation" class="mt-2 text-sm text-indigo-600 hover:text-indigo-800">
+      📍 Use my current location
+    </button> %>
   </div>
 
   <div class="bg-white shadow overflow-hidden sm:rounded-md">
@@ -69,8 +68,33 @@
 <%= javascript_tag do %>
   document.getElementById('useLocation').addEventListener('click', function() {
     if (navigator.geolocation) {
+      // Show loading state
+      const button = this;
+      const originalText = button.textContent;
+      button.textContent = 'Getting your location...';
+      button.disabled = true;
+      
+      // Add a safety timeout to prevent infinite hanging
+      const safetyTimeout = setTimeout(() => {
+        button.textContent = '❌ GPS timeout';
+        button.disabled = false;
+        alert('GPS is taking too long. Please enter an address manually or try again.');
+        setTimeout(() => {
+          button.textContent = originalText;
+        }, 3000);
+      }, 5000); // 5 second timeout
+      
       navigator.geolocation.getCurrentPosition(function(position) {
+        clearTimeout(safetyTimeout);
+        
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        
+        console.log(`Got coordinates: ${lat}, ${lng}`); // Debug log
+        
+        // Skip reverse geocoding entirely - just use coordinates directly
         const form = document.querySelector('form');
+        const locationField = form.querySelector('input[name="location"]');
         
         // Remove any existing hidden coordinates
         const existingLat = form.querySelector('input[name="latitude"]');
@@ -78,7 +102,7 @@
         if (existingLat) existingLat.remove();
         if (existingLng) existingLng.remove();
         
-        // Add new coordinates
+        // Add new coordinates as hidden fields
         const latitude = document.createElement('input');
         const longitude = document.createElement('input');
         
@@ -86,19 +110,60 @@
         longitude.type = 'hidden';
         latitude.name = 'latitude';
         longitude.name = 'longitude';
-        latitude.value = position.coords.latitude;
-        longitude.value = position.coords.longitude;
+        latitude.value = lat;
+        longitude.value = lng;
         
         form.appendChild(latitude);
         form.appendChild(longitude);
         
-        // Clear the location field since we're using coordinates
-        const locationField = form.querySelector('input[name="location"]');
-        if (locationField) locationField.value = '';
+        // Show coordinates in the location field for user reference
+        locationField.value = `Your current location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
         
-        form.submit();
+        // Reset button state and show success
+        button.textContent = '✅ Location found! Click Search';
+        button.disabled = false;
+        
+        // Highlight the search button to encourage manual submission
+        const searchButton = form.querySelector('input[type="submit"]');
+        searchButton.classList.add('bg-green-600', 'hover:bg-green-700');
+        searchButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+        
+        // Reset button text after 3 seconds
+        setTimeout(() => {
+          button.textContent = originalText;
+          searchButton.classList.remove('bg-green-600', 'hover:bg-green-700');
+          searchButton.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+        }, 3000);
       }, function(error) {
-        alert('Unable to get your location. Please enter an address manually.');
+        clearTimeout(safetyTimeout);
+        
+        // Reset button state
+        button.textContent = originalText;
+        button.disabled = false;
+        
+        console.error('Geolocation error:', error); // Debug log
+        
+        let errorMessage = 'Unable to get your location. ';
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage += 'Please allow location access and try again.';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage += 'Location information is unavailable.';
+            break;
+          case error.TIMEOUT:
+            errorMessage += 'Location request timed out.';
+            break;
+          default:
+            errorMessage += 'Please enter an address manually.';
+            break;
+        }
+        
+        alert(errorMessage);
+      }, {
+        timeout: 3000,           // 3 second timeout for faster response
+        enableHighAccuracy: false, // Use network/wifi location for speed
+        maximumAge: 300000       // Cache location for 5 minutes
       });
     } else {
       alert('Geolocation is not supported by this browser. Please enter an address manually.');

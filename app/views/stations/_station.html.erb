@@ -1,14 +1,20 @@
 <div class="flex justify-between items-start">
   <div>
-    <h3 class="text-lg font-medium text-gray-900"><%= station.name %></h3>
-    <p class="text-sm text-gray-500"><%= station.address %></p>
+    <h3 class="text-lg font-medium text-gray-900">
+      <%= link_to station.name, station_path(station), class: "hover:text-indigo-600 transition-colors" %>
+    </h3>    
+    <p class="text-sm text-gray-500">
+      <%= link_to station.address, station.google_maps_url, 
+          target: "_blank", 
+          class: "hover:text-indigo-600 transition-colors hover:underline",
+          title: "View on Google Maps" %>
+    </p>
     <div class="mt-2 flex space-x-4 text-sm text-gray-500">
-      <p>Connectors: <%= station.connector_types %></p>
       <% if station.power_output.present? %>
         <p>Power: <%= station.power_output %> kW</p>
       <% end %>
-      <p class="<%= station.is_operational ? 'text-green-600' : 'text-red-600' %>">
-        <%= station.availability.titleize %>
+      <p class="<%= station.status_css_class %>">
+        <%= station.status %>
       </p>
     </div>
   </div>
