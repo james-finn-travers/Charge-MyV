@@ -1,4 +1,4 @@
-# ChargeFinder
+# Charge-MyV
 
 An EV charging station locator for Ontario, Canada. Find and filter over 2,000 charging stations across Ontario with detailed information about power levels, locations, and availability.
 
