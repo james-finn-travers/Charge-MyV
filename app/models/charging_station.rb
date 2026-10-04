@@ -1,12 +1,12 @@
 class ChargingStation < ApplicationRecord
   # Explicitly set the table name to avoid conflicts with model name override
   self.table_name = "charging_stations"
-  
+
   # Configure Rails to use 'station' for route helpers instead of 'charging_station'
   def self.model_name
     @model_name ||= ActiveModel::Name.new(self, nil, "Station")
   end
-  
+
   geocoded_by :address
   # Only geocode when we don't already have coordinates, and the address changed
   after_validation :geocode_safely, if: ->(obj) {
@@ -32,17 +32,17 @@ class ChargingStation < ApplicationRecord
 
   # Status display helper
   def status
-    is_operational? ? 'Operational' : 'Out of Service'
+    is_operational? ? "Operational" : "Out of Service"
   end
 
   # Status CSS class helper
   def status_css_class
-    is_operational? ? 'text-green-600' : 'text-red-600'
+    is_operational? ? "text-green-600" : "text-red-600"
   end
 
   # Badge CSS class helper
   def status_badge_class
-    is_operational? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+    is_operational? ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
   end
 
   # Google Maps integration
@@ -53,7 +53,7 @@ class ChargingStation < ApplicationRecord
 
   def google_maps_directions_url(from_lat: nil, from_lng: nil)
     base_url = "https://www.google.com/maps/dir/"
-    
+
     if from_lat && from_lng
       # Directions from specific location
       "#{base_url}#{from_lat},#{from_lng}/#{latitude},#{longitude}"

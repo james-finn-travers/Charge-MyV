@@ -1,16 +1,16 @@
 namespace :stats do
-  desc 'Show charging station statistics'
+  desc "Show charging station statistics"
   task stations: :environment do
     total = ChargingStation.count
     operational = ChargingStation.where(is_operational: true).count
     with_power = ChargingStation.where.not(power_output: nil).count
-    
+
     puts "\nCharging Station Statistics:"
     puts "----------------------------"
     puts "Total stations: #{total}"
     puts "Operational stations: #{operational}"
     puts "Stations with power info: #{with_power}"
-    
+
     if total > 0
       puts "\nSample station:"
       sample = ChargingStation.first

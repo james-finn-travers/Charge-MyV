@@ -1,0 +1,32 @@
+openapi: 3.0.1
+info:
+  title: Charge-MyV API
+  version: v1
+  description: EV charging station locator API
+paths:
+  /api/v1/stations:
+    get:
+      summary: Search charging stations
+      responses:
+        '200':
+          description: List of stations
+  /api/v1/stations/{id}:
+    get:
+      summary: Get station details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Station details
+        '404':
+          description: Station not found
+  /api/v1/auth/login:
+    post:
+      summary: Authenticate user
+      responses:
+        '200':
+          description: JWT token

@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: chargefinder_development
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    ports:
+      - "3005:80"
+    environment:
+      DATABASE_URL: postgres://postgres:password@db:5432/chargefinder_development
+      JWT_SECRET: supersecretjwtkeymustbelongandsecure12345
+      RAILS_ENV: development
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

@@ -17,7 +17,7 @@ class CreateChargingStations < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
-    add_index :charging_stations, [:latitude, :longitude]
+    add_index :charging_stations, [ :latitude, :longitude ]
     add_index :charging_stations, :connector_types
     add_index :charging_stations, :provider
   end
